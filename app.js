@@ -63,6 +63,8 @@ const today = stripTime(new Date());
 let view = new Date(today.getFullYear(), today.getMonth(), 1);
 let selected = new Date(today);
 let notes = loadNotes();
+console.log("[INIT] notes loaded:", Object.keys(notes).length, "dates");
+console.log("[INIT] notes object:", notes);
 
 function stripTime(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
 function key(d){
@@ -175,6 +177,7 @@ function renderRef(){
 }
 
 function render(){
+  console.log("[RENDER] notes at render time:", Object.keys(notes).length, "dates");
   renderBanner();
   renderGrid();
   renderDay();
