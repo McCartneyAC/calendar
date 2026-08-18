@@ -193,8 +193,16 @@ function escape_(s){
 const STORE = "narodnyi-kalendar";
 
 function loadNotes(){
-  try { return JSON.parse(localStorage.getItem(STORE)) || {}; }
-  catch { return {}; }
+  try {
+    const raw = localStorage.getItem(STORE);
+    console.log("[LOAD] raw from storage:", raw ? raw.length + " chars" : "null");
+    const parsed = JSON.parse(raw || "{}");
+    console.log("[LOAD] parsed successfully:", Object.keys(parsed).length, "dates");
+    return parsed;
+  } catch (e) {
+    console.error("[LOAD] ERROR:", e.message, e);
+    return {};
+  }
 }
 
 function saveNotes(){
