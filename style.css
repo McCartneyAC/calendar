@@ -70,7 +70,7 @@ body{
 .banner__year{
   margin: 0;
   font-family: var(--mono);
-  font-size: 0.9rem;
+  font-size: 1.29rem;
   color: var(--ink-dim);
   letter-spacing: 0.14em;
 }
@@ -84,7 +84,7 @@ body{
 
 .case-line{
   margin: 0 0 3px;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   display: flex;
   align-items: baseline;
   gap: 9px;
@@ -93,7 +93,7 @@ body{
 
 .case-tag{
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.8rem;
   letter-spacing: 0.1em;
   color: var(--carmine);
   min-width: 2.6em;
@@ -101,21 +101,21 @@ body{
 
 .case-note{
   font-family: var(--mono);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-style: normal;
   color: var(--ink-dim);
 }
 
 .etym{
   margin: 12px 0 0;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   line-height: 1.45;
   color: var(--ink-mid);
 }
 
 .etym--en{
   margin-top: 2px;
-  font-size: 0.76rem;
+  font-size: 0.8rem;
   font-style: italic;
   color: var(--ink-dim);
 }
@@ -131,7 +131,7 @@ body{
 .nav__btn,
 .nav__today{
   font-family: var(--mono);
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   background: transparent;
   color: var(--ink);
   border: 1px solid var(--rule);
@@ -183,7 +183,7 @@ body{
   display: block;
   margin-top: 3px;
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.8rem;
   color: var(--ink-dim);
 }
 
@@ -258,7 +258,7 @@ body{
   left: 9px;
   right: 9px;
   bottom: 6px;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   color: var(--ink-mid);
   white-space: nowrap;
   overflow: hidden;
@@ -289,13 +289,13 @@ body{
 .day__when{
   margin: 7px 0 0;
   font-family: var(--mono);
-  font-size: 0.88rem;
+  font-size: 1rem;
   color: var(--carmine);
 }
 
 .day__long{
   margin: 11px 0 0;
-  font-size: 0.83rem;
+  font-size: 1rem;
   color: var(--ink-mid);
 }
 
@@ -305,7 +305,7 @@ body{
   flex: 1;
   min-width: 0;
   font: inherit;
-  font-size: 0.92rem;
+  font-size: 1rem;
   padding: 7px 10px;
   background: transparent;
   border: 1px solid var(--rule);
@@ -319,7 +319,7 @@ body{
 
 .add__btn{
   font-family: var(--mono);
-  font-size: 0.78rem;
+  font-size: 1rem;
   padding: 7px 13px;
   background: var(--ink);
   color: var(--paper);
@@ -341,7 +341,7 @@ body{
   gap: 10px;
   padding: 6px 0;
   border-bottom: 1px solid var(--rule);
-  font-size: 0.92rem;
+  font-size: 1.1rem;
 }
 
 .note__text{ flex: 1; min-width: 0; overflow-wrap: anywhere; }
@@ -361,7 +361,7 @@ body{
 
 .notes__empty{
   margin: 12px 0 0;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: var(--ink-dim);
 }
 
@@ -373,7 +373,7 @@ body{
   padding: 13px 28px;
   cursor: pointer;
   font-family: var(--mono);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   letter-spacing: 0.06em;
   color: var(--ink-mid);
   list-style: none;
@@ -400,7 +400,7 @@ body{
 .ref__h{
   margin: 0 0 10px;
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.8rem;
   font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -426,26 +426,26 @@ body{
 .ref__item::before{
   content: counter(r);
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   color: var(--ink-dim);
   padding-top: 2px;
 }
 
 .ref__pair{
-  font-size: 0.92rem;
+  font-size: 0.99rem;
 }
 
 .ref__pair b{ font-weight: 500; }
 
 .ref__pair span{
   font-family: var(--mono);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   color: var(--carmine);
 }
 
 .ref__note{
   display: block;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: var(--ink-mid);
 }
 
@@ -462,7 +462,7 @@ body{
   padding: 11px 28px 13px;
   border-top: 1px solid var(--rule);
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: 0.9rem;
   color: var(--ink-dim);
 }
 
