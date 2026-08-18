@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Народний календар</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<main class="sheet">
+
+  <!-- Month word: the signature element -->
+  <header class="banner">
+    <div class="banner__word">
+      <h1 id="monthNom" class="banner__nom">серпень</h1>
+      <p class="banner__year" id="yearNum">2026</p>
+    </div>
+    <div class="banner__gloss">
+      <p class="case-line">
+        <span class="case-tag">Н.в.</span><span id="glossNom">серпень</span>
+      </p>
+      <p class="case-line">
+        <span class="case-tag">Р.в.</span><span id="glossGen">серпня</span>
+        <em class="case-note">18 <span id="glossGenEcho">серпня</span></em>
+      </p>
+      <p class="etym" id="monthEtym"></p>
+      <p class="etym etym--en" id="monthEtymEn"></p>
+    </div>
+    <nav class="nav" aria-label="Місяці">
+      <button type="button" id="prevBtn" class="nav__btn" aria-label="Попередній місяць">←</button>
+      <button type="button" id="todayBtn" class="nav__today">сьогодні</button>
+      <button type="button" id="nextBtn" class="nav__btn" aria-label="Наступний місяць">→</button>
+    </nav>
+  </header>
+
+  <!-- Grid -->
+  <section class="calendar" aria-label="Календар">
+    <div class="weekdays" id="weekdays"></div>
+    <div class="grid" id="grid" role="grid" tabindex="0" aria-label="Дні місяця"></div>
+  </section>
+
+  <!-- Selected day -->
+  <section class="day" aria-live="polite">
+    <div class="day__parse">
+      <p class="day__full" id="dayFull">понеділок, вісімнадцяте серпня</p>
+      <p class="day__when" id="dayWhen">у понеділок</p>
+      <p class="day__long" id="dayLong"></p>
+      <p class="etym etym--en" id="dayEtymEn"></p>
+    </div>
+
+    <div class="day__notes">
+      <form class="add" id="addForm">
+        <input type="text" id="noteInput" class="add__input" placeholder="Що цього дня?" autocomplete="off" aria-label="Новий запис">
+        <button type="submit" class="add__btn">записати</button>
+      </form>
+      <ul class="notes" id="notes"></ul>
+      <p class="notes__empty" id="notesEmpty">Нічого не записано.</p>
+    </div>
+  </section>
+
+  <!-- Reference sheet -->
+  <details class="ref">
+    <summary class="ref__summary">Довідник — усі назви</summary>
+    <div class="ref__body">
+      <div class="ref__col">
+        <h2 class="ref__h">Дні тижня</h2>
+        <ol class="ref__list" id="refDays"></ol>
+      </div>
+      <div class="ref__col">
+        <h2 class="ref__h">Місяці</h2>
+        <ol class="ref__list" id="refMonths"></ol>
+      </div>
+    </div>
+  </details>
+
+  <footer class="foot">
+    <span id="storeState" class="foot__state"></span>
+    <span class="foot__acts">
+      <button type="button" id="exportBtn" class="foot__btn">зберегти копію</button>
+      <button type="button" id="importBtn" class="foot__btn">відновити</button>
+      <input type="file" id="importFile" accept="application/json" hidden>
+    </span>
+  </footer>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
