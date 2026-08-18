@@ -1,6 +1,9 @@
 /* Народний календар — Ukrainian spelling calendar
    Data first, then rendering, then storage, then wiring. */
 
+const APP_VERSION = "20250818-v4";
+console.log("[APP] Version:", APP_VERSION);
+
 /* ── 1. Language data ─────────────────────────────────── */
 
 const MONTHS = [
@@ -194,13 +197,15 @@ const STORE = "narodnyi-kalendar";
 
 function loadNotes(){
   try {
+    console.log("[LOAD] STORE key is:", STORE);
     const raw = localStorage.getItem(STORE);
-    console.log("[LOAD] raw from storage:", raw ? raw.length + " chars" : "null");
+    console.log("[LOAD] raw from storage:", raw ? raw.substring(0, 100) + "..." : "NULL");
     const parsed = JSON.parse(raw || "{}");
     console.log("[LOAD] parsed successfully:", Object.keys(parsed).length, "dates");
     return parsed;
   } catch (e) {
     console.error("[LOAD] ERROR:", e.message, e);
+    console.log("[LOAD] raw value that failed:", localStorage.getItem(STORE));
     return {};
   }
 }
