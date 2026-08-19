@@ -52,6 +52,9 @@ function ordinal(n, table, thirty){
 const ordNom = n => ordinal(n, ORD_NOM, "тридцяте");
 const ordGen = n => ordinal(n, ORD_GEN, "тридцятого");
 
+/* Storage key — must be defined before loadNotes() is called */
+const STORE = "narodnyi-kalendar";
+
 /* "дві тисячі двадцять шостого року" */
 function yearGen(y){
   const tail = y % 100;
@@ -192,8 +195,6 @@ function escape_(s){
 }
 
 /* ── 4. Storage ───────────────────────────────────────── */
-
-const STORE = "narodnyi-kalendar";
 
 function loadNotes(){
   try {
