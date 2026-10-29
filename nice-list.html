@@ -241,6 +241,32 @@ h1{margin:.2rem 0 0;font-family:var(--serif);font-style:italic;font-weight:400;f
 .stashhead{font-family:var(--serif);font-style:italic;font-size:1.3rem;color:var(--burg);display:flex;align-items:center;gap:.5rem}
 .toast{position:fixed;left:50%;bottom:calc(1rem + env(safe-area-inset-bottom));transform:translate(-50%,40px);opacity:0;pointer-events:none;background:#120c08;color:var(--brass-l);border:1px solid var(--brass-d);padding:.55rem 1rem;border-radius:8px;font-family:var(--head);box-shadow:0 6px 18px rgba(0,0,0,.6);transition:all .25s;z-index:50;max-width:90vw;text-align:center}
 .toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- table layout ---------- */
+.layout{display:flex}
+.layout button{cursor:pointer;border:1px solid #6b4f33;background:#20150e;color:#bba98a;padding:.35rem .7rem;font-family:var(--head);font-size:.9rem}
+.layout button:first-child{border-radius:5px 0 0 5px}
+.layout button:last-child{border-radius:0 5px 5px 0;border-left:0}
+.layout button.on{background:linear-gradient(#f0d58a,#c9a24b);color:#2a1d0a;border-color:#8d6e2c}
+.tablewrap{grid-column:1/-1;overflow-x:auto;border-radius:6px;background:var(--paper);box-shadow:0 10px 22px rgba(0,0,0,.55)}
+table.ledger{width:100%;border-collapse:collapse;color:var(--ink);font-size:.95rem}
+.ledger th{font-family:var(--head);font-weight:400;text-transform:uppercase;letter-spacing:.1em;font-size:.78rem;text-align:left;padding:.65rem .8rem;background:#d9c9a0;border-bottom:3px double var(--ink-soft);color:var(--burg);white-space:nowrap}
+.ledger td{padding:.6rem .8rem;border-bottom:1px dashed rgba(90,70,54,.4);vertical-align:top}
+.ledger tbody tr[data-goto]{cursor:pointer}
+.ledger tbody tr:hover{background:rgba(122,26,43,.07)}
+.ledger td.nm{font-family:var(--serif);font-style:italic;font-size:1.15rem;color:var(--burg);white-space:nowrap}
+.ledger .stg{font-style:normal;font-size:.8rem;margin-right:.5rem;width:1rem;text-align:center}
+.stgN{color:#8a7456}.stg0{color:var(--s0)}.stg1{color:#b8861f}.stg2{color:var(--s2)}.stg3{color:var(--s3)}
+.ledger .ok{color:var(--s3)}.ledger .wr{color:var(--s2)}
+.ledger .null{color:var(--red);font-style:italic;opacity:.8}
+.ledger .dim{color:var(--ink-soft);opacity:.7}
+.ledger .coalrow{opacity:.65}
+.tcount{margin:0;padding:.55rem .8rem;font-size:.8rem;color:var(--ink-soft);text-align:right}
+@media (max-width:640px){
+  .layout button{min-height:44px}
+  .ledger td,.ledger th{padding:.55rem .55rem}
+  .ledger td.nm{font-size:1.05rem}
+}
 </style>
 </head>
 <body>
@@ -298,6 +324,10 @@ h1{margin:.2rem 0 0;font-family:var(--serif);font-style:italic;font-weight:400;f
       <option value="deliver">Wrapped, awaiting hand-over</option>
       <option value="done">All done</option>
     </select>
+    <div class="layout" id="layoutToggle" role="group" aria-label="Layout">
+      <button type="button" data-layout="cards" title="Card view"><i class="fa-solid fa-address-card"></i> Cards</button>
+      <button type="button" data-layout="table" title="Table view"><i class="fa-solid fa-table-list"></i> Table</button>
+    </div>
     <div class="tools">
       <button class="btn ghost" id="btnExport" type="button"><i class="fa-solid fa-file-export"></i> Export</button>
       <button class="btn ghost" id="btnImport" type="button"><i class="fa-solid fa-file-import"></i> Import</button>
@@ -362,7 +392,7 @@ function seed(){
   const shot = () => mkGift('Hutsul shot glass', 1, 0, 'USD', 'suitcase', '', 1);
   const magnet = () => mkGift('"Russian Warship, Go F*** Yourself" stamp magnet', 1, 0, 'USD', 'suitcase', '', 1);
   return {
-    v:2, settings:defaultSettings(), view:'nice', filter:'all',
+    v:2, settings:defaultSettings(), view:'nice', filter:'all', layout:'cards',
     people:[
       {id:uid(), name:'Walter', nice:true, ideas:'', gifts:[shot(), magnet()]},
       {id:uid(), name:'Mike', nice:true, ideas:'', gifts:[shot(), magnet()]}
@@ -394,7 +424,8 @@ function normalize(raw){
   const stash = (Array.isArray(raw && raw.stash) ? raw.stash : []).map(normGift);
   const view = ['nice','coal','all','stash'].includes(raw && raw.view) ? raw.view : 'nice';
   const filter = ['all','none','todo','wrap','deliver','done'].includes(raw && raw.filter) ? raw.filter : 'all';
-  return {v:2, settings:s, view, filter, people, stash};
+  const layout = raw && raw.layout === 'table' ? 'table' : 'cards';
+  return {v:2, settings:s, view, filter, layout, people, stash};
 }
 
 /* ---------- storage ---------- */
@@ -606,25 +637,65 @@ function renderAddForm(){
   if (st || !state.stash.length){ pk.hidden = true; pk.innerHTML = ''; }
   else { pk.hidden = false; pk.innerHTML = '<option value="">Start with a stash gift? (optional)</option>' + stashOpts(); }
 }
+/* ---------- table layout ---------- */
+const STG_CLASS = ['stgN', 'stg0', 'stg1', 'stg2', 'stg3'];
+const itemLabel = g => {
+  const ico = g.status === 3 ? '<i class="fa-solid fa-circle-check ok" title="Delivered"></i> '
+    : g.status === 2 ? '<i class="fa-solid fa-gift wr" title="Wrapped"></i> ' : '';
+  return `<span class="it">${ico}${esc(g.name || '(unnamed)')}${g.qty > 1 ? ' ×' + g.qty : ''}</span>`;
+};
+function peopleTableHTML(list){
+  let bought = 0;
+  const rows = list.map(p => {
+    const got = p.gifts.filter(g => g.status >= 1);
+    const todo = p.gifts.filter(g => g.status === 0);
+    bought += got.reduce((a, g) => a + g.qty, 0);
+    const st = stageOf(p);
+    const gotCell = got.length ? got.map(itemLabel).join(', ') : '<span class="null">NULL</span>';
+    let todoCell;
+    if (todo.length) todoCell = todo.map(g => `<span class="it">${esc(g.name || '(unnamed)')}${g.qty > 1 ? ' ×' + g.qty : ''}</span>`).join(', ');
+    else if (!p.gifts.length && p.nice) todoCell = '<span class="need">needs a gift</span>';
+    else todoCell = '<span class="dim">—</span>';
+    return `<tr data-goto="${p.id}" class="${p.nice ? '' : 'coalrow'}">
+      <td class="nm"><i class="fa-solid ${STAGE_ICONS[st + 1]} stg ${STG_CLASS[st + 1]}" title="${STAGE_LABELS[st + 1]}"></i>${esc(p.name || '(unnamed)')}${p.nice ? '' : ' <small class="dim">(coal)</small>'}</td>
+      <td>${gotCell}</td><td>${todoCell}</td></tr>`;
+  }).join('');
+  return `<div class="tablewrap"><table class="ledger">
+    <thead><tr><th>Name</th><th>Purchased</th><th>Still to buy</th></tr></thead>
+    <tbody>${rows}</tbody></table>
+    <p class="tcount">${list.length} ${list.length === 1 ? 'person' : 'people'} · ${bought} item${bought === 1 ? '' : 's'} purchased</p></div>`;
+}
+function stashTableHTML(){
+  const rows = state.stash.map(g => `<tr>
+    <td class="nm"><i class="fa-solid ${STATUS[g.status].icon} stg ${STG_CLASS[g.status + 1]}"></i>${esc(g.name || '(unnamed)')}</td>
+    <td>${g.qty}</td><td>${STATUS[g.status].short}</td></tr>`).join('');
+  return `<div class="tablewrap"><table class="ledger">
+    <thead><tr><th>Item</th><th>Qty</th><th>Stage</th></tr></thead>
+    <tbody>${rows}</tbody></table>
+    <p class="tcount">${stashUnits()} unassigned item${stashUnits() === 1 ? '' : 's'}</p></div>`;
+}
+
 function render(){
   renderTabs(); renderAddForm();
-  const st = state.view === 'stash';
+  const st = state.view === 'stash', tbl = state.layout === 'table';
   $('#filter').value = state.filter; $('#filter').hidden = st;
-  $('#howto').innerHTML = st
-    ? 'Gifts you bought with nobody in mind. Give one to someone here, or pick from the stash on any person\'s card.'
-    : 'Tap an icon on a gift to set its stage: <b>To buy</b> → <b>Bought</b> → <b>Wrapped</b> → <b>Delivered</b>.';
+  document.querySelectorAll('#layoutToggle button').forEach(b => b.classList.toggle('on', b.dataset.layout === state.layout));
+  if (tbl) $('#howto').innerHTML = st ? 'Everything in the stash, at a glance.' : 'Tap a row to open that person\'s card.';
+  else if (st) $('#howto').innerHTML = 'Gifts you bought with nobody in mind. Give one to someone here, or pick from the stash on any person\'s card.';
+  else $('#howto').innerHTML = 'Tap an icon on a gift to set its stage: <b>To buy</b> → <b>Bought</b> → <b>Wrapped</b> → <b>Delivered</b>.';
   let html;
   if (st){
-    html = state.stash.length ? state.stash.map(stashHTML).join('')
-      : '<div class="empty-state">The stash is empty. Gifts you buy with nobody in mind go here.</div>';
+    if (!state.stash.length) html = '<div class="empty-state">The stash is empty. Gifts you buy with nobody in mind go here.</div>';
+    else html = tbl ? stashTableHTML() : state.stash.map(stashHTML).join('');
   } else {
     const list = state.people.filter(p => (state.view === 'all' || (state.view === 'nice') === p.nice) && matchesFilter(p));
-    html = list.length ? list.map(personHTML).join('')
-      : `<div class="empty-state">${state.people.length ? 'Nobody matches this view.' : 'The ledger is blank. Inscribe a name above.'}</div>`;
+    if (!list.length) html = `<div class="empty-state">${state.people.length ? 'Nobody matches this view.' : 'The ledger is blank. Inscribe a name above.'}</div>`;
+    else html = tbl ? peopleTableHTML(list) : list.map(personHTML).join('');
   }
   $('#cards').innerHTML = html;
   refreshDerived();
 }
+
 function rerenderCard(pid){
   const p = state.people.find(x => x.id === pid), el = document.querySelector(`[data-pid="${pid}"]`);
   if (p && el) el.outerHTML = personHTML(p);
@@ -745,6 +816,16 @@ $('#tabs').addEventListener('click', e => {
   state.view = b.dataset.view; save(); render();
 });
 $('#filter').addEventListener('change', e => { state.filter = e.target.value; save(); render(); });
+$('#layoutToggle').addEventListener('click', e => {
+  const b = e.target.closest('[data-layout]'); if (!b) return;
+  state.layout = b.dataset.layout; save(); render();
+});
+cards.addEventListener('click', e => {
+  const row = e.target.closest('[data-goto]'); if (!row) return;
+  state.layout = 'cards'; save(); render();
+  const el = document.querySelector(`[data-pid="${row.dataset.goto}"]`);
+  if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+});
 
 /* settings inputs */
 function bindSetting(id, key, parse){
